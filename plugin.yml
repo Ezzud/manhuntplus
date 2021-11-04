@@ -1,0 +1,8 @@
+name: Manhunt
+main: fr.ezzud.hunting.Main
+version: 1.2
+author: Ezzud
+api-version: 1.16
+commands:
+  manhunt:
+    description: Fait par ezzud
