@@ -39,9 +39,9 @@ permissions_reload: "manhunt.admin"
 #                                                                                                                      #
 ########################################################################################################################
 
-hunted: 'Ezzud'
+hunted: 'Speedrunner'
 team1:
-   - 'Naykii'   
+   - 'user1'   
 team2:
    - 'user2'
 guards:
@@ -80,12 +80,12 @@ defeatCommands:
 #                                                                                                                      #
 ########################################################################################################################
 
-spawnCoords: 0, 11, 2
+spawnCoords: 0, 80, 0
 
-huntedCoords: -7, 79, 34 
-guardCoords: -7, 79, 34
-team1Coords: -200, 82, -200
-team2Coords: 200, 70, -200
+huntedCoords: 0, 80, 0
+guardCoords: 0, 80, 0
+team1Coords: -200, 80, -200
+team2Coords: 200, 80, -200
 
 
 
