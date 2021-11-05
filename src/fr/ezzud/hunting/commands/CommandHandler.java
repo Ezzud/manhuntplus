@@ -13,6 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import fr.ezzud.hunting.Main;
+import fr.ezzud.hunting.api.events.manhuntGameStartEvent;
+import fr.ezzud.hunting.api.events.manhuntGameStopEvent;
+import fr.ezzud.hunting.api.methods.manhuntTeam;
 import fr.ezzud.hunting.management.CountdownTimer;
 import fr.ezzud.hunting.management.colorManager;
 import fr.ezzud.hunting.management.compassManager;
@@ -407,6 +410,8 @@ public class CommandHandler implements CommandExecutor {
 		    		              plugin.counted = true;
 		    		              plugin.counting = false;
 		    		    		  new gameManager().start();
+		    		    		  manhuntGameStartEvent startEvent = new manhuntGameStartEvent(new manhuntTeam());
+		    					  Bukkit.getPluginManager().callEvent(startEvent);	
 		    			    	  Main.GameState = true;
 		    			    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_gameStarted")));
 		    			    	  
@@ -431,6 +436,8 @@ public class CommandHandler implements CommandExecutor {
 			            return true;		    		  
 		    	  }
 		    	  	gameManager.stop();
+		    	  	manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeam());
+					Bukkit.getPluginManager().callEvent(stopEvent);	
 		            return true;
 		      }		      
 		      return false;

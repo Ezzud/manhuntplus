@@ -14,6 +14,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import fr.ezzud.hunting.Main;
+import fr.ezzud.hunting.api.events.manhuntGameStopEvent;
+import fr.ezzud.hunting.api.events.manhuntSpeedrunnerWinEvent;
+import fr.ezzud.hunting.api.methods.manhuntTeam;
 
 public class onEntityKill implements Listener {
     Main plugin;
@@ -26,6 +29,8 @@ public class onEntityKill implements Listener {
 	        Entity entity = event.getEntity();
 	            if (entity.getType().equals(EntityType.ENDER_DRAGON)) {
 			    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_enderdragon_win").replaceAll("%player%", plugin.getConfig().getString("hunted"))));
+					   manhuntSpeedrunnerWinEvent winEvent = new manhuntSpeedrunnerWinEvent();
+					   Bukkit.getPluginManager().callEvent(winEvent);
 			    	  ArrayList<?> list2 = new ArrayList<>(Bukkit.getOnlinePlayers());
 			    	  list2.forEach((pl) -> {
 			    		  Player player = ((Player) pl);
@@ -56,6 +61,8 @@ public class onEntityKill implements Listener {
 			                  Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consolecommand.replace("%player%", member));
 			               }
 			           }
+			           manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeam());
+					   Bukkit.getPluginManager().callEvent(stopEvent);	
 	            }
 	   }
 }

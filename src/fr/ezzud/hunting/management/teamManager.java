@@ -6,6 +6,9 @@ import fr.ezzud.hunting.Main;
 
 public class teamManager {
 	static Main plugin = Main.getInstance(); 
+	
+
+	
 		public static boolean isTeam(String user) {
    			boolean isTeam = false;
    			
