@@ -27,6 +27,13 @@ leaveMessage: "&a%player% leaved the party!" # Variables: %player%
 permissions_start: "manhunt.admin"
 permissions_stop: "manhunt.admin"
 permissions_reload: "manhunt.admin"
+permissions_setspawn: "manhunt.admin"
+permissions_setlocation: "manhunt.admin"
+permissions_setspeedrunner: "manhunt.admin"
+permissions_addteam: "manhunt.admin"
+permissions_removeteam: "manhunt.admin"
+permissions_list: "manhunt.default"
+permissions_help: "manhunt.default"
 
 
 
