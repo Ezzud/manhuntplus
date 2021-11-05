@@ -1,9 +1,7 @@
 package fr.ezzud.hunting;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -13,12 +11,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.Statistic;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import fr.ezzud.hunting.commands.CommandHandler;
 import fr.ezzud.hunting.listeners.onBreak;
 import fr.ezzud.hunting.listeners.onChat;
 import fr.ezzud.hunting.listeners.onDamage;
@@ -41,9 +36,16 @@ import fr.ezzud.hunting.listeners.onSpawn;
 
 @SuppressWarnings({ "deprecation" })
 public class Main extends JavaPlugin implements Listener {
+	private static Main plugin;
 		public static Boolean GameState = false;
-		
+		   
+		   public static Main getInstance() {
+			      return plugin;
+		   }
+		   
+		   
 		   public void onEnable() {
+			   	  plugin = this;
 			      this.saveDefaultConfig();
 			      PluginManager pm = Bukkit.getPluginManager();
 			      pm.registerEvents(this, this);
@@ -57,445 +59,21 @@ public class Main extends JavaPlugin implements Listener {
 			      pm.registerEvents(new onBreak(this), this);
 			      pm.registerEvents(new onLeave(this), this);
 			      pm.registerEvents(new onEntityKill(this), this);
-			      this.getCommand("manhunt").setExecutor(this);
+			      this.getCommand("manhunt").setExecutor(new CommandHandler(this));
 			      this.setWhitelist();
-			   }
+		   }
+		   
+		   
 		   public void onDisable() {
 			   this.resetWhitelist();
 		   }	
-		   
-	   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		   
-		   
-		   
-		   
-		   	if(args.length <= 0) {
-		   		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + " &aCreated by ezzud#0001"));
-		   	}
-		   	
-	   	
-		      if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-		         if (!sender.hasPermission(this.getConfig().getString("permissions_reload")) && !sender.isOp()) {
-		            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix")  + this.getConfig().getString("messages_noPermission")));
-		            return true;
-		         } else {
-		            this.reloadConfig();
-		            this.saveConfig();
-		            this.setColors();
-		            this.resetWhitelist();
-		            this.setWhitelist();	   
-		            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix")  + this.getConfig().getString("messages_reloadMessageSuccessful")));
-		            return true;
-		         }
-		      }
-		      
-		      
-		      
-		      
-		      if (args.length > 0 && args[0].equalsIgnoreCase("tp")) {
-		    	  if(GameState == false) {
-			            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix")  + this.getConfig().getString("messages_gameNotStarted")));
-			            return true;		    		  
-		    	  }
-		    	  boolean isAGuard = false;
-				   Iterator<?> teamGVar = this.getConfig().getStringList("guards").iterator();
+	
 
-		           while(teamGVar.hasNext()) {
-		               String member = (String)teamGVar.next();		               
-		               if(member.equals(sender.getName())) {
-		            	   	  isAGuard = true;
-		            	   	if (Bukkit.getServer().getPlayer(this.getConfig().getString("hunted")) != null){
-						    	  Player naykii = Bukkit.getPlayer(this.getConfig().getString("hunted"));
-						    	  Location naykiiloc = naykii.getLocation();
-						    	  ((Entity) sender).teleport(new Location(naykii.getWorld(),Math.round(naykiiloc.getX()) , Math.round(naykiiloc.getY()), naykiiloc.getZ()));
-						    	  sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("teleported")));		
-						    	  return true;
-		            	   	} else {
-		            	   		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix")  + this.getConfig().getString("prefix") + this.getConfig().getString("messages_speedrunnerNotConnected")));
-		            	   		return false;
-		            	   	}
-		               }
-		           }
-	               if(isAGuard == false) {
-	            	   sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix")  + this.getConfig().getString("prefix") + this.getConfig().getString("messages_notAGuard"))); 
-	            	   return true;
-	               }
-		      }
-		      if (args.length > 0 && args[0].equalsIgnoreCase("help")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_help")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				      }	
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&6&lCommands list"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt help &7[Display this message]"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt reload &7[Reload config & whitelist]"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt start &7[Start the game]"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt stop &7[Stop the game]"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt setspawn &7[Set the lobby to your position]"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt setlocation <team> &7[Set the starting position of the team] "));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a  > (Teams: team1, team2, guards, spectators)"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt setspeedrunner <Player Name> &7[Change the speedrunner]"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt addteammember <Player Name> <Team> &7[Add a member in a team]"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a  > (Teams: team1, team2, guards, spectators)"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt removeteammember <Player Name> <Team> &7[Remove a member from a team]"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a  > (Teams: speedrunner, team1, team2, guards)"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt tp &7[Allow guards to teleport to the speedrunner] &cONLY INGAME"));
-			         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6- &e/manhunt list &7[Display the list of all teams]"));
-			         return true;
-		      }
-		      
-		      if (args.length > 0 && args[0].equalsIgnoreCase("setspawn")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_setspawn")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				      }
-		    	  		String playername = sender.getName();
-		    	  		Player player = Bukkit.getPlayer(playername);
-		    	  		Location loc = player.getLocation();
-		    	  		String message = String.valueOf(new DecimalFormat("#").format(loc.getX())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getY())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getZ()));
-		    	  		this.getConfig().set("spawnCoords", message);
-		    	  		this.saveConfig();
-		    	  		this.reloadConfig();
-		    	  		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix")  + "&eLobby &6spawn point has been set to &a" + message));			        	 
-		    	  		return true;
-		      }
-		      
-		      if (args.length > 0 && args[0].equalsIgnoreCase("setlocation")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_setlocation")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				      }
-			         if(args.length < 2) {
-			        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUsage: /manhunt setlocation <team> (team1, team2, guards, speedrunner)"));
-			        	 return true;		        	 
-			         }
-			         if(args[1].equalsIgnoreCase("speedrunner")) {
-			    	  		String playername = sender.getName();
-			    	  		Player player = Bukkit.getPlayer(playername);
-			    	  		Location loc = player.getLocation();
-			    	  		String message = String.valueOf(new DecimalFormat("#").format(loc.getX())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getY())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getZ()));
-			    	  		this.getConfig().set("huntedCoords", message);
-			    	  		this.saveConfig();
-			    	  		this.reloadConfig();
-			    	  		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("huntedColor") +  "Speedrunner &6spawn point has been set to &a" + message));			        	 
-			    	  		return true;
-			         } else if(args[1].equalsIgnoreCase("team1")) {
-			    	  		String playername = sender.getName();
-			    	  		Player player = Bukkit.getPlayer(playername);
-			    	  		Location loc = player.getLocation();
-			    	  		String message = String.valueOf(new DecimalFormat("#").format(loc.getX())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getY())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getZ()));
-			    	  		this.getConfig().set("team1Coords", message);
-			    	  		this.saveConfig();
-			    	  		this.reloadConfig();
-			    	  		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("team1Color") + this.getConfig().getString("team1name")  + " &6spawn point has been set to &a" + message));			        	 
-			    	  		return true;
-			         } else if(args[1].equalsIgnoreCase("team2")) {
-			    	  		String playername = sender.getName();
-			    	  		Player player = Bukkit.getPlayer(playername);
-			    	  		Location loc = player.getLocation();
-			    	  		String message = String.valueOf(new DecimalFormat("#").format(loc.getX())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getY())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getZ()));
-			    	  		this.getConfig().set("team2Coords", message);
-			    	  		this.saveConfig();
-			    	  		this.reloadConfig();
-			    	  		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("team2Color") + this.getConfig().getString("team2name") + " &6spawn point has been set to &a" + message));			        	 
-			    	  		return true;
-			         } else if(args[1].equalsIgnoreCase("guards")) {
-			    	  		String playername = sender.getName();
-			    	  		Player player = Bukkit.getPlayer(playername);
-			    	  		Location loc = player.getLocation();
-			    	  		String message = String.valueOf(new DecimalFormat("#").format(loc.getX())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getY())) + ", " + String.valueOf(new DecimalFormat("#").format(loc.getZ()));
-			    	  		this.getConfig().set("guardCoords", message);
-			    	  		this.saveConfig();
-			    	  		this.reloadConfig();
-			    	  		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("guardColor") + this.getConfig().getString("guardTeamName") + " &6spawn point has been set to &a" + message));			        	 
-			    	  		return true;
-			         } else {
-			        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cInvalid team!"));
-			        	 return true;
-			         }
-		    	  
-		      }
-		      if (args.length > 0 && args[0].equalsIgnoreCase("setspeedrunner")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_setspeedrunner")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				      }
-			         if(args.length < 2) {
-			        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUsage: /manhunt setspeedrunner <player name>"));
-			        	 return true;		        	 
-			         }
-			         
-			         if(Bukkit.getOfflinePlayer(args[1]) != null) {
-			        	 OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-		    	  			if(isTeam(player.getName()) == true) {
-					        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cPlayer is already in a team!"));
-					        	 return true;			    	  				
-		    	  			}
-			    	  		this.getConfig().set("hunted", player.getName());
-			    	  		this.saveConfig();	
-			    	  		this.reloadConfig();
-			    	  		this.setColors();
-			    	  		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&aThe speedrunner is now &6" + player.getName()));
-			        	 return true;
-			         } else {
-			        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUser not found!"));
-			        	 return true;
-			         }      
-		      }
-		      
-		      if (args.length > 0 && args[0].equalsIgnoreCase("addteammember")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_addteam")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				      }
-			         if(args.length < 2) {
-			        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUsage: /manhunt addteammember <player name> <team>"));
-			        	 return true;		        	 
-			         }
-			         if(Bukkit.getOfflinePlayer(args[1]) != null) {
-			        	 OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-				         if(args.length < 3) {
-				        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUsage: /manhunt addteammember <player name> <team>"));
-				        	 return true;		        	 
-				         }
-		    	  			if(isTeam(player.getName()) == true) {
-					        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cPlayer is already in a team!"));
-					        	 return true;			    	  				
-		    	  			}
-			    	  	switch(args[2].toLowerCase()) {
-			    	  		case "team1":
-			    	  			List<String> list = this.getConfig().getStringList("team1");
-			    	  			list.add(player.getName());
-			    	  			this.getConfig().set("team1", list);
-			    	  			this.saveConfig();
-			    	  			this.reloadConfig();
-			    	  			this.setColors();
-			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been added to the team " + this.getConfig().getString("team1Color") + this.getConfig().getString("team1name")));
-			    	  			break;
-			    	  		case "team2":
-			    	  			List<String> list2 = this.getConfig().getStringList("team2");
-			    	  			list2.add(player.getName());
-			    	  			this.getConfig().set("team2", list2);
-			    	  			this.saveConfig();
-			    	  			this.reloadConfig();
-			    	  			this.setColors();
-			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been added to the team " + this.getConfig().getString("team2Color") + this.getConfig().getString("team2name")));
-			    	  			break;
-			    	  		case "guards":
-			    	  			List<String> list3 = this.getConfig().getStringList("guards");
-			    	  			list3.add(player.getName());
-			    	  			this.getConfig().set("guards", list3);
-			    	  			this.saveConfig();
-			    	  			this.reloadConfig();
-			    	  			this.setColors();
-			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been added to the team " + this.getConfig().getString("guardColor") + this.getConfig().getString("guardTeamName")));
-			    	  			break;
-			    	  		case "spectators":
-			    	  			List<String> list4 = this.getConfig().getStringList("spectators");
-			    	  			list4.add(player.getName());
-			    	  			this.getConfig().set("spectators", list4);
-			    	  			this.saveConfig();
-			    	  			this.reloadConfig();
-			    	  			this.setColors();
-			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been added to the team " + this.getConfig().getString("spectatorColor") + this.getConfig().getString("spectatorName")));
-			    	  			break;
-			    	  		default:
-					        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cGive a valid team! (team1, team2, guards, spectators)"));
-					        	 break;
-			    	  		
-			    	  	}
-			        	 return true;
-			         } else {
-			        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUser not found!"));
-			        	 return true;
-			         }  
-		      }
-		      
-		      if (args.length > 0 && args[0].equalsIgnoreCase("removeteammember")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_removeteam")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				      }
-			         if(args.length < 2) {
-			        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUsage: /manhunt removeteammember <player name> <team>"));
-			        	 return true;		        	 
-			         }
-			         if(Bukkit.getOfflinePlayer(args[1]) != null) {
-			        	 OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-				         if(args.length < 3) {
-				        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUsage: /manhunt removeteammember <player name> <team>"));
-				        	 return true;		        	 
-				         }
-		    	  			if(isTeam(player.getName()) == false) {
-					        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cPlayer is not in a team!"));
-					        	 return true;			    	  				
-		    	  			}
-			    	  	switch(args[2].toLowerCase()) {
-			    	  		case "team1":
-			    	  			List<String> list = this.getConfig().getStringList("team1");
-			    	  			int index = list.indexOf(player.getName());
-			    	  			list.remove(index);
-			    	  			this.getConfig().set("team1", list);
-			    	  			this.saveConfig();
-			    	  			this.reloadConfig();
-			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been removed from the team " + this.getConfig().getString("team1Color") + this.getConfig().getString("team1name")));
-			    	  			break;
-			    	  		case "team2":
-			    	  			List<String> list2 = this.getConfig().getStringList("team2");
-			    	  			int index2 = list2.indexOf(player.getName());
-			    	  			list2.remove(index2);
-			    	  			this.getConfig().set("team2", list2);
-			    	  			this.saveConfig();
-			    	  			this.reloadConfig();
-			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been removed from the team " + this.getConfig().getString("team2Color") + this.getConfig().getString("team2name")));
-			    	  			break;
-			    	  		case "guards":
-			    	  			List<String> list3 = this.getConfig().getStringList("guards");
-			    	  			int index3 = list3.indexOf(player.getName());
-			    	  			list3.remove(index3);
-			    	  			this.getConfig().set("guards", list3);
-			    	  			this.saveConfig();
-			    	  			this.reloadConfig();
-			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been removed from the team " + this.getConfig().getString("guardColor") + this.getConfig().getString("guardTeamName")));
-			    	  			break;
-			    	  		case "spectators":
-			    	  			List<String> list4 = this.getConfig().getStringList("spectators");
-			    	  			int index4 = list4.indexOf(player.getName());
-			    	  			list4.remove(index4);
-			    	  			this.getConfig().set("spectators", list4);
-			    	  			this.saveConfig();
-			    	  			this.reloadConfig();
-			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been removed from the team " + this.getConfig().getString("spectatorColor") + this.getConfig().getString("spectatorName")));
-			    	  			break;
-			    	  		default:
-					        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cGive a valid team! (team1, team2, guards, spectators)"));
-					        	 break;
-			    	  		
-			    	  	}
-			        	 return true;
-			         } else {
-			        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + "&cUser not found!"));
-			        	 return true;
-			         }  
-		      }
-		      if (args.length > 0 && args[0].equalsIgnoreCase("list")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_list")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				      }
-				   Iterator<?> team1Var = this.getConfig().getStringList("team1").iterator();
-				   
-			       while(team1Var.hasNext()) {
-			           String member = (String)team1Var.next();
-			           sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("team1Color") + this.getConfig().getString("team1name") + " "+ member));
-			       }
-			       
-				   Iterator<?> team2Var = this.getConfig().getStringList("team2").iterator();
-
-			       while(team2Var.hasNext()) {
-			           String member = (String)team2Var.next();
-			           sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("team2Color") + this.getConfig().getString("team2name") + " "+ member));
-			       }
-			       
-			       
-				   Iterator<?> teamGVar = this.getConfig().getStringList("guards").iterator();
-
-			       while(teamGVar.hasNext()) {
-			           String member = (String)teamGVar.next();
-			           sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("guardColor") + this.getConfig().getString("guardTeamName") + " "+ member));
-
-			       }
-				   Iterator<?> teamSVar = this.getConfig().getStringList("spectators").iterator();
-
-			       while(teamSVar.hasNext()) {
-			           String member = (String)teamSVar.next();
-			           sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("spectatorColor") + this.getConfig().getString("spectatorName") + " "+ member));
-
-			       }	
-				   String teamHVar = this.getConfig().getString("hunted");
-				   sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("huntedColor") +"Speedrunner " +  teamHVar));
-				   
-				   return true;
-		      }
-
-		      
-		      
-		      if (args.length > 0 && args[0].equalsIgnoreCase("start")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_start")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				      }
-		    	  if(GameState == true) {
-			            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix")  + this.getConfig().getString("messages_gameAlreadyStarted")));
-			            return true;		    		  
-		    	  }
-		    	  GameState = true;
-		    	  Bukkit.getWorld("world").setTime(0);
-		    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_gameIsStarting")));  
-		    	  	try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b5"));
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b4")); 
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b3"));
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b2")); 
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b1"));  
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}  
-		    	  ArrayList<?> list = new ArrayList<>(Bukkit.getOnlinePlayers());
-		    	  list.forEach((p) -> {
-		    		  
-		    		  Player player = ((Player) p);
-		    		  giveItems(player);
-		    		  	
-		              player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 100, 0);
-		    	  });
-		    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_gameStarted")));
-		    	  
-		    	  compassCalibrate(this.getConfig().getString("hunted"), this.getConfig());
-
-		      }
-		      if (args.length > 0 && args[0].equalsIgnoreCase("stop")) {
-			         if (!sender.hasPermission(this.getConfig().getString("permissions_stop")) && !sender.isOp()) {
-				            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_noPermission")));
-				            return true;
-				         }
-		    	  if(GameState == false) {
-			            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_gameNotStarted")));
-			            return true;		    		  
-		    	  }
-		    	  GameState = false;
-		    	  ArrayList<?> list = new ArrayList<>(Bukkit.getOnlinePlayers());
-		    	  list.forEach((p) -> {
-		    		  
-		    		  Player player = ((Player) p);
-					   player.getActivePotionEffects().clear();
-					   player.setGameMode(GameMode.ADVENTURE);
-					   player.teleport(new Location(Bukkit.getWorld("world"), Double.parseDouble(this.getConfig().getString("spawnCoords").split(", ")[0]), Double.parseDouble(this.getConfig().getString("spawnCoords").split(", ")[1]), Double.parseDouble(this.getConfig().getString("spawnCoords").split(", ")[2])));	
-					   player.setHealth(20.0);
-					   player.setFoodLevel(20);
-					   player.setSaturation(20);
-					   player.setLevel(0);
-					   player.setExp(0);
-					   player.getInventory().clear();
-		    	  });
-
-		    	  
-		            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("prefix") + this.getConfig().getString("messages_gameStopped")));
-		            return true;
-		      }		      
-		      return false;
-	   }
-	   
-
-	   		
-
-	   		public boolean isTeam(String user) {
+	   		public static boolean isTeam(String user) {
 	   			boolean isTeam = false;
 	   			
 	   			
-				   Iterator<?> team1Var = this.getConfig().getStringList("team1").iterator();
+				   Iterator<?> team1Var = plugin.getConfig().getStringList("team1").iterator();
 				   
 		           while(team1Var.hasNext()) {
 		               String member = (String)team1Var.next();
@@ -504,7 +82,7 @@ public class Main extends JavaPlugin implements Listener {
 		                }
 		           }
 		           
-				   Iterator<?> team2Var = this.getConfig().getStringList("team2").iterator();
+				   Iterator<?> team2Var = plugin.getConfig().getStringList("team2").iterator();
 
 		           while(team2Var.hasNext()) {
 		               String member = (String)team2Var.next();
@@ -513,12 +91,12 @@ public class Main extends JavaPlugin implements Listener {
 		                }
 		           }
 		           
-				   String teamHVar = this.getConfig().getString("hunted");
+				   String teamHVar = plugin.getConfig().getString("hunted");
 	               if(teamHVar.equals(user)) {
 	            	   isTeam = true;
 	                }			
 		           
-				   Iterator<?> teamGVar = this.getConfig().getStringList("guards").iterator();
+				   Iterator<?> teamGVar = plugin.getConfig().getStringList("guards").iterator();
 
 		           while(teamGVar.hasNext()) {
 		               String member = (String)teamGVar.next();
@@ -526,7 +104,7 @@ public class Main extends JavaPlugin implements Listener {
 		            	   isTeam = true;
 		                }
 		           }
-				   Iterator<?> teamSVar = this.getConfig().getStringList("spectators").iterator();
+				   Iterator<?> teamSVar = plugin.getConfig().getStringList("spectators").iterator();
 
 		           while(teamSVar.hasNext()) {
 		               String member = (String)teamSVar.next();
@@ -537,7 +115,7 @@ public class Main extends JavaPlugin implements Listener {
 		           return isTeam;
 	   		}
 		   
-		   public boolean compassCalibrate(String hunted, FileConfiguration config) {
+		   public static boolean compassCalibrate(String hunted, FileConfiguration config) {
 			    	new Timer().scheduleAtFixedRate(new TimerTask(){
 			    	    public void run(){
 			    	    	if(GameState == true) {
@@ -572,7 +150,7 @@ public class Main extends JavaPlugin implements Listener {
  
 			    	    	}
 			    	    }
-			    	},0,this.getConfig().getLong("coordinatesRefreshDelay")*1000);
+			    	},0,plugin.getConfig().getLong("coordinatesRefreshDelay")*1000);
 
 				return false;
 		   }
@@ -633,24 +211,29 @@ public class Main extends JavaPlugin implements Listener {
 		   }
 		   
 		   
-		   public void giveItems(Player player) {
-	           Iterator<?> team1Var = this.getConfig().getStringList("team1").iterator();
+		   public static void giveItems(Player player) {
+	           Iterator<?> team1Var = plugin.getConfig().getStringList("team1").iterator();
 
 	           while(team1Var.hasNext()) {
 	              String member = (String)team1Var.next();
 	              if(member.toString().equals(player.getName())) {
 	            	 player.getActivePotionEffects().clear();
+	            	 for (Object cItem : player.getActivePotionEffects()) {
+		  	               String potionEffectName = cItem.toString().split(":")[0];
+		  	               PotionEffectType effect = PotionEffectType.getByName(potionEffectName);
+		  	               player.removePotionEffect(effect);
+		  	           }
 	             	 player.getInventory().clear();
 	             	 player.setGameMode(GameMode.SURVIVAL);
 	             	 player.setHealth(20.0);
 	             	 player.setSaturation(20);
 	             	 player.setLevel(0);
 	             	 player.setExp(0);
-	             	 player.setDisplayName(this.getConfig().getString("team1Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
-	            	 player.setPlayerListName(this.getConfig().getString("team1Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+	             	 player.setDisplayName(plugin.getConfig().getString("team1Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+	            	 player.setPlayerListName(plugin.getConfig().getString("team1Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	             	 player.setStatistic(Statistic.TIME_SINCE_REST, 0);
-	             	 player.teleport(new Location(Bukkit.getWorld("world"), Double.parseDouble(this.getConfig().getString("team1Coords").split(", ")[0]), Double.parseDouble(this.getConfig().getString("team1Coords").split(", ")[1]), Double.parseDouble(this.getConfig().getString("team1Coords").split(", ")[2])));             	 
-	             	 for (String cItem : this.getConfig().getStringList("teamItems")) {
+	             	 player.teleport(new Location(Bukkit.getWorld("world"), Double.parseDouble(plugin.getConfig().getString("team1Coords").split(", ")[0]), Double.parseDouble(plugin.getConfig().getString("team1Coords").split(", ")[1]), Double.parseDouble(plugin.getConfig().getString("team1Coords").split(", ")[2])));             	 
+	             	 for (String cItem : plugin.getConfig().getStringList("teamItems")) {
 		             	    String[] asArray = cItem.split(", ");
 		             	    if(Material.valueOf(asArray[0]) != null ) {
 		             	    	ItemStack item = new ItemStack(Material.valueOf(asArray[0]), Integer.parseInt(asArray[1]));
@@ -658,39 +241,44 @@ public class Main extends JavaPlugin implements Listener {
 			             	    	
 		             	    }
 	             	 }
-	               	 for (String cItem : this.getConfig().getStringList("teamEffects")) {
+	               	 for (String cItem : plugin.getConfig().getStringList("teamEffects")) {
 		               	    String[] asArray = cItem.split(", ");
 		               	    if(PotionEffectType.getByName(asArray[0]) != null) {
 			               	    PotionEffect effect = new PotionEffect(PotionEffectType.getByName(asArray[0]), Integer.parseInt(asArray[1])*20, Integer.parseInt(asArray[2]));
 			               	    player.addPotionEffect(effect);
 		               	    }
 
-		                }       	 
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +   this.getConfig().getString("messages_teamReveal").replaceAll("%team%", this.getConfig().getString("team1name")).replaceAll("%teamColor%", this.getConfig().getString("team1Color"))));
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +   this.getConfig().getString("messages_objectives_team").replaceAll("%player%", this.getConfig().getString("hunted"))));
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +  this.getConfig().getString("messages_feature_team").replaceAll("%delay%", this.getConfig().getString("coordinatesRefreshDelay"))));
+		             }       	 
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") +   plugin.getConfig().getString("messages_teamReveal").replaceAll("%team%", plugin.getConfig().getString("team1name")).replaceAll("%teamColor%", plugin.getConfig().getString("team1Color"))));
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") +   plugin.getConfig().getString("messages_objectives_team").replaceAll("%player%", plugin.getConfig().getString("hunted"))));
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") +  plugin.getConfig().getString("messages_feature_team").replaceAll("%delay%", plugin.getConfig().getString("coordinatesRefreshDelay"))));
 
-	             	Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawnpoint " + player.getName() + " " + this.getConfig().getString("team1Coords").split(", ")[0]  + " " + this.getConfig().getString("team1Coords").split(", ")[1]  + " " + this.getConfig().getString("team1Coords").split(", ")[2]);
+	             	Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawnpoint " + player.getName() + " " + plugin.getConfig().getString("team1Coords").split(", ")[0]  + " " + plugin.getConfig().getString("team1Coords").split(", ")[1]  + " " + plugin.getConfig().getString("team1Coords").split(", ")[2]);
 	              }
 	           }
-	           Iterator<?> team2Var = this.getConfig().getStringList("team2").iterator();
+	           Iterator<?> team2Var = plugin.getConfig().getStringList("team2").iterator();
 
 	           while(team2Var.hasNext()) {
 	              String member = (String)team2Var.next();
 	              if(member.toString().equals(player.getName())) {
 	            	 player.getActivePotionEffects().clear();
+	            	 for (Object cItem : player.getActivePotionEffects()) {
+		  	               String potionEffectName = cItem.toString().split(":")[0];
+		  	               PotionEffectType effect = PotionEffectType.getByName(potionEffectName);
+		  	               player.removePotionEffect(effect);
+		  	           }
 	             	 player.getInventory().clear();
 	             	 player.setGameMode(GameMode.SURVIVAL);
-	             	 player.setDisplayName(this.getConfig().getString("team2Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
-	            	 player.setPlayerListName(this.getConfig().getString("team2Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+	             	 player.setDisplayName(plugin.getConfig().getString("team2Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+	            	 player.setPlayerListName(plugin.getConfig().getString("team2Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	             	 player.setHealth(20.0);
 	             	 player.setSaturation(20);
 	             	 player.setFoodLevel(20);
 	             	 player.setLevel(0);
 	             	 player.setExp(0);
 	             	 player.setStatistic(Statistic.TIME_SINCE_REST, 0);	             	 
-	             	 player.teleport(new Location(Bukkit.getWorld("world"), Double.parseDouble(this.getConfig().getString("team2Coords").split(", ")[0]), Double.parseDouble(this.getConfig().getString("team2Coords").split(", ")[1]), Double.parseDouble(this.getConfig().getString("team2Coords").split(", ")[2])));             	 
-	             	 for (String cItem : this.getConfig().getStringList("teamItems")) {
+	             	 player.teleport(new Location(Bukkit.getWorld("world"), Double.parseDouble(plugin.getConfig().getString("team2Coords").split(", ")[0]), Double.parseDouble(plugin.getConfig().getString("team2Coords").split(", ")[1]), Double.parseDouble(plugin.getConfig().getString("team2Coords").split(", ")[2])));             	 
+	             	 for (String cItem : plugin.getConfig().getStringList("teamItems")) {
 		             	    String[] asArray = cItem.split(", ");
 		             	    if(Material.valueOf(asArray[0]) != null ) {
 		             	    	ItemStack item = new ItemStack(Material.valueOf(asArray[0]), Integer.parseInt(asArray[1]));
@@ -698,7 +286,7 @@ public class Main extends JavaPlugin implements Listener {
 			             	    	
 		             	    }
 		             }
-	               	 for (String cItem : this.getConfig().getStringList("teamEffects")) {
+	               	 for (String cItem : plugin.getConfig().getStringList("teamEffects")) {
 		               	    String[] asArray = cItem.split(", ");
 		               	    if(PotionEffectType.getByName(asArray[0]) != null) {
 			               	    PotionEffect effect = new PotionEffect(PotionEffectType.getByName(asArray[0]), Integer.parseInt(asArray[1])*20, Integer.parseInt(asArray[2]));
@@ -706,34 +294,39 @@ public class Main extends JavaPlugin implements Listener {
 		               	    }
 
 		                }
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +  this.getConfig().getString("messages_teamReveal").replaceAll("%team%", this.getConfig().getString("team2name")).replaceAll("%teamColor%", this.getConfig().getString("team2Color"))));
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +  this.getConfig().getString("messages_objectives_team").replaceAll("%player%", this.getConfig().getString("hunted"))));
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_feature_team").replaceAll("%delay%", this.getConfig().getString("coordinatesRefreshDelay"))));
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") +  plugin.getConfig().getString("messages_teamReveal").replaceAll("%team%", plugin.getConfig().getString("team2name")).replaceAll("%teamColor%", plugin.getConfig().getString("team2Color"))));
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") +  plugin.getConfig().getString("messages_objectives_team").replaceAll("%player%", plugin.getConfig().getString("hunted"))));
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_feature_team").replaceAll("%delay%", plugin.getConfig().getString("coordinatesRefreshDelay"))));
 	             	 
-	             	 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawnpoint " + player.getName() + " " + this.getConfig().getString("team2Coords").split(", ")[0]  + " " + this.getConfig().getString("team2Coords").split(", ")[1]  + " " + this.getConfig().getString("team2Coords").split(", ")[2]);
+	             	 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawnpoint " + player.getName() + " " + plugin.getConfig().getString("team2Coords").split(", ")[0]  + " " + plugin.getConfig().getString("team2Coords").split(", ")[1]  + " " + plugin.getConfig().getString("team2Coords").split(", ")[2]);
 	              
 	              }
 	           }
 
 	           
-	           Iterator<?> guardVar = this.getConfig().getStringList("guards").iterator();
+	           Iterator<?> guardVar = plugin.getConfig().getStringList("guards").iterator();
 
 	           while(guardVar.hasNext()) {
 	              String member = (String)guardVar.next();
 	              if(member.toString().equals(player.getName())) {
 	            	 player.getActivePotionEffects().clear(); 
+	            	 for (Object cItem : player.getActivePotionEffects()) {
+		  	               String potionEffectName = cItem.toString().split(":")[0];
+		  	               PotionEffectType effect = PotionEffectType.getByName(potionEffectName);
+		  	               player.removePotionEffect(effect);
+		  	           }
 	             	 player.getInventory().clear();
 	             	 player.setGameMode(GameMode.SURVIVAL);
 	             	 player.setDisplayName(ChatColor.GOLD + player.getName() + ChatColor.RESET);
-	            	 player.setPlayerListName(this.getConfig().getString("guardColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+	            	 player.setPlayerListName(plugin.getConfig().getString("guardColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	             	 player.setHealth(20.0);
 	             	 player.setSaturation(20);
 	             	 player.setFoodLevel(20);
 	             	 player.setLevel(0);
 	             	 player.setExp(0);
 	             	 player.setStatistic(Statistic.TIME_SINCE_REST, 0);	            	 
-	             	 player.teleport(new Location(player.getWorld(), Double.parseDouble(this.getConfig().getString("guardCoords").split(", ")[0]), Double.parseDouble(this.getConfig().getString("guardCoords").split(", ")[1]), Double.parseDouble(this.getConfig().getString("guardCoords").split(", ")[2])));	             	 
-	             	 for (String cItem : this.getConfig().getStringList("guardItems")) {
+	             	 player.teleport(new Location(player.getWorld(), Double.parseDouble(plugin.getConfig().getString("guardCoords").split(", ")[0]), Double.parseDouble(plugin.getConfig().getString("guardCoords").split(", ")[1]), Double.parseDouble(plugin.getConfig().getString("guardCoords").split(", ")[2])));	             	 
+	             	 for (String cItem : plugin.getConfig().getStringList("guardItems")) {
 		             	    String[] asArray = cItem.split(", ");
 		             	    if(Material.valueOf(asArray[0]) != null ) {
 		             	    	ItemStack item = new ItemStack(Material.valueOf(asArray[0]), Integer.parseInt(asArray[1]));
@@ -741,7 +334,7 @@ public class Main extends JavaPlugin implements Listener {
 			             	    	
 		             	    };
 		             	 }
-	               	 for (String cItem : this.getConfig().getStringList("guardEffects")) {
+	               	 for (String cItem : plugin.getConfig().getStringList("guardEffects")) {
 		               	    String[] asArray = cItem.split(", ");
 		               	    if(PotionEffectType.getByName(asArray[0]) != null) {
 			               	    PotionEffect effect = new PotionEffect(PotionEffectType.getByName(asArray[0]), Integer.parseInt(asArray[1])*20, Integer.parseInt(asArray[2]));
@@ -749,21 +342,26 @@ public class Main extends JavaPlugin implements Listener {
 		               	    }
 
 		                }
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("messages_teamReveal").replaceAll("%team%", this.getConfig().getString("guardname")).replaceAll("%teamColor%", this.getConfig().getString("guardColor"))));
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("messages_objectives_guard").replaceAll("%player%", this.getConfig().getString("hunted"))));
-	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +  this.getConfig().getString("messages_feature_guard")));
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages_teamReveal").replaceAll("%team%", plugin.getConfig().getString("guardname")).replaceAll("%teamColor%", plugin.getConfig().getString("guardColor"))));
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages_objectives_guard").replaceAll("%player%", plugin.getConfig().getString("hunted"))));
+	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") +  plugin.getConfig().getString("messages_feature_guard")));
 	             	 
-	             	 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawnpoint " + player.getName() + " " + this.getConfig().getString("guardCoords").split(", ")[0] + " " + this.getConfig().getString("guardCoords").split(", ")[1] + " " + this.getConfig().getString("guardCoords").split(", ")[2]);
+	             	 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawnpoint " + player.getName() + " " + plugin.getConfig().getString("guardCoords").split(", ")[0] + " " + plugin.getConfig().getString("guardCoords").split(", ")[1] + " " + plugin.getConfig().getString("guardCoords").split(", ")[2]);
 	             	 
 	              }
 	           }
 	           
 	           
-	           String huntedVar = this.getConfig().getString("hunted");
+	           String huntedVar = plugin.getConfig().getString("hunted");
 
 	              if(huntedVar.toString().equals(player.getName())) {
-	             	 Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_teleporting").replaceAll("%player%", player.getDisplayName()))); 
-	             	player.getActivePotionEffects().clear();
+	             	 Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_teleporting").replaceAll("%player%", player.getDisplayName()))); 
+	             	 player.getActivePotionEffects().clear();
+	             	for (Object cItem : player.getActivePotionEffects()) {
+		  	               String potionEffectName = cItem.toString().split(":")[0];
+		  	               PotionEffectType effect = PotionEffectType.getByName(potionEffectName);
+		  	               player.removePotionEffect(effect);
+		  	           }
 	             	 player.getInventory().clear();
 	             	 player.setGameMode(GameMode.SURVIVAL);
 	             	 player.setHealth(20.0);
@@ -771,20 +369,12 @@ public class Main extends JavaPlugin implements Listener {
 	             	 player.setSaturation(20);
 	             	 player.setLevel(0);
 	             	 player.setExp(0);
-	             	 player.setDisplayName(this.getConfig().getString("huntedColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
-	            	 player.setPlayerListName(this.getConfig().getString("huntedColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+	             	 player.setDisplayName(plugin.getConfig().getString("huntedColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+	            	 player.setPlayerListName(plugin.getConfig().getString("huntedColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	             	 player.setStatistic(Statistic.TIME_SINCE_REST, 0); 
-	             	 player.teleport(new Location(player.getWorld(), Double.parseDouble(this.getConfig().getString("huntedCoords").split(", ")[0]), Double.parseDouble(this.getConfig().getString("huntedCoords").split(", ")[1]), Double.parseDouble(this.getConfig().getString("huntedCoords").split(", ")[2])));           	 
+	             	 player.teleport(new Location(player.getWorld(), Double.parseDouble(plugin.getConfig().getString("huntedCoords").split(", ")[0]), Double.parseDouble(plugin.getConfig().getString("huntedCoords").split(", ")[1]), Double.parseDouble(plugin.getConfig().getString("huntedCoords").split(", ")[2])));           	 
 	               	 
-	             	 for (String cItem : this.getConfig().getStringList("huntedEffects")) {
-	               	    String[] asArray = cItem.split(", ");
-	               	    if(PotionEffectType.getByName(asArray[0]) != null) {
-		               	    PotionEffect effect = new PotionEffect(PotionEffectType.getByName(asArray[0]), Integer.parseInt(asArray[1])*20, Integer.parseInt(asArray[2]));
-		               	    player.addPotionEffect(effect);
-	               	    }
-
-	                }
-	             	 for (String cItem : this.getConfig().getStringList("huntedItems")) {
+	             	 for (String cItem : plugin.getConfig().getStringList("huntedItems")) {
 		             	    String[] asArray = cItem.split(", ");
 		             	    if(Material.valueOf(asArray[0]) != null ) {
 		             	    	ItemStack item = new ItemStack(Material.valueOf(asArray[0]), Integer.parseInt(asArray[1]));
@@ -792,14 +382,26 @@ public class Main extends JavaPlugin implements Listener {
 			             	    	
 		             	    }
 		             }
-	              
+	             	 for (String cItem : plugin.getConfig().getStringList("huntedEffects")) {
+		               	    String[] asArray = cItem.split(", ");
+		               	    if(PotionEffectType.getByName(asArray[0]) != null) {
+			               	    PotionEffect effect = new PotionEffect(PotionEffectType.getByName(asArray[0]), Integer.parseInt(asArray[1])*20, Integer.parseInt(asArray[2]));
+			               	    player.addPotionEffect(effect);
+		               	    }
+
+		                }
 	              }
-				   Iterator<?> teamSVar = this.getConfig().getStringList("spectators").iterator();
+				   Iterator<?> teamSVar = plugin.getConfig().getStringList("spectators").iterator();
 
 		           while(teamSVar.hasNext()) {
 		               String member = (String)teamSVar.next();
 		               if(member.equals(player.getName())) {
-		            	   player.getActivePotionEffects().clear();
+		    			   player.getActivePotionEffects().clear();
+		               	 for (Object cItem : player.getActivePotionEffects()) {
+		  	               String potionEffectName = cItem.toString().split(":")[0];
+		  	               PotionEffectType effect = PotionEffectType.getByName(potionEffectName);
+		  	               player.removePotionEffect(effect);
+		  	           }
 			             	 player.getInventory().clear();
 			             	 player.setGameMode(GameMode.SPECTATOR);
 			             	 player.setHealth(20.0);
@@ -807,7 +409,7 @@ public class Main extends JavaPlugin implements Listener {
 			             	 player.setSaturation(20);
 			             	 player.setLevel(0);
 			             	 player.setExp(0);
-			             	 player.teleport(new Location(player.getWorld(), Double.parseDouble(this.getConfig().getString("huntedCoords").split(", ")[0]) , Double.parseDouble(this.getConfig().getString("huntedCoords").split(", ")[0]), Double.parseDouble(this.getConfig().getString("huntedCoords").split(", ")[2])));
+			             	 player.teleport(new Location(player.getWorld(), Double.parseDouble(plugin.getConfig().getString("huntedCoords").split(", ")[0]) , Double.parseDouble(plugin.getConfig().getString("huntedCoords").split(", ")[0]), Double.parseDouble(plugin.getConfig().getString("huntedCoords").split(", ")[2])));
 		                }
 		           }
 	           

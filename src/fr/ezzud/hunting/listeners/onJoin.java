@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.potion.PotionEffectType;
+
 import fr.ezzud.hunting.Main;
 
 public class onJoin implements Listener {
@@ -83,6 +85,11 @@ public class onJoin implements Listener {
 			   Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("joinMessage").replaceAll("%player%", p)));
 			   Player player = event.getPlayer();
 			   player.getActivePotionEffects().clear();
+             	 for (Object cItem : player.getActivePotionEffects()) {
+	               String potionEffectName = cItem.toString().split(":")[0];
+	               PotionEffectType effect = PotionEffectType.getByName(potionEffectName);
+	               player.removePotionEffect(effect);
+	           }
 			   player.setGameMode(GameMode.ADVENTURE);
 			   player.teleport(new Location(Bukkit.getWorld("world"), Double.parseDouble(plugin.getConfig().getString("spawnCoords").split(", ")[0]), Double.parseDouble(plugin.getConfig().getString("spawnCoords").split(", ")[1]), Double.parseDouble(plugin.getConfig().getString("spawnCoords").split(", ")[2])));	
 			   player.setHealth(20.0);
