@@ -7,6 +7,7 @@ Plugin is fully configurable</h3><br />
 ![Img](https://media.discordapp.net/attachments/886217701930987623/905948717402701864/band2.png)<br />
 <p>
 
+![Img](https://media.discordapp.net/attachments/886217701930987623/906163894903525407/unknown.png)<br />
 - Multiple Teams (Customisable name, color)
 - Compass who point the speedrunner, customisable refresh cooldown
 - Whitelist system who can whitelist only players in the config
