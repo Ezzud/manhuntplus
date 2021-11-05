@@ -66,7 +66,7 @@ huntedColor: "&e"
 guardColor: "&6"
 spectatorColor: "&7"
 coordinatesRefreshDelay: 45 #Commas do not work
-
+counterToStart: 5 #Countdown before game starts
 
 winCommands:
    - "tell %player% You win!"
@@ -170,6 +170,7 @@ messages_notAGuard: "&cYou are not a guard"
 messages_gameAlreadyStarted: '&cGame already started'
 messages_gameStarted: "&aGame just started"
 messages_gameIsStarting: "&aStarting in..."
+messages_gameStartingCount: "&b%seconds%"
 
 messages_gameNotStarted: "&cGame is not started"
 messages_gameStopped: "&cGame has been stopped"

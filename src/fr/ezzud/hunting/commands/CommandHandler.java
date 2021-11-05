@@ -1,26 +1,27 @@
 package fr.ezzud.hunting.commands;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-
 import fr.ezzud.hunting.Main;
+import fr.ezzud.hunting.management.CountdownTimer;
+import fr.ezzud.hunting.management.colorManager;
+import fr.ezzud.hunting.management.compassManager;
+import fr.ezzud.hunting.management.gameManager;
+import fr.ezzud.hunting.management.teamManager;
+import fr.ezzud.hunting.management.whitelistManager;
 
 public class CommandHandler implements CommandExecutor {
-    Main plugin;
+    static Main plugin;
     
     public CommandHandler(Main instance) {
         plugin = instance;
@@ -42,9 +43,9 @@ public class CommandHandler implements CommandExecutor {
 		         } else {
 		            plugin.reloadConfig();
 		            plugin.saveConfig();
-		            plugin.setColors();
-		            plugin.resetWhitelist();
-		            plugin.setWhitelist();	   
+		            colorManager.setColors();
+		            whitelistManager.resetWhitelist();
+		            whitelistManager.setWhitelist();	   
 		            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix")  + plugin.getConfig().getString("messages_reloadMessageSuccessful")));
 		            return true;
 		         }
@@ -188,14 +189,14 @@ public class CommandHandler implements CommandExecutor {
 			         
 			         if(Bukkit.getOfflinePlayer(args[1]) != null) {
 			        	 OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-		    	  			if(Main.isTeam(player.getName()) == true) {
+		    	  			if(teamManager.isTeam(player.getName()) == true) {
 					        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&cPlayer is already in a team!"));
 					        	 return true;			    	  				
 		    	  			}
 			    	  		plugin.getConfig().set("hunted", player.getName());
 			    	  		plugin.saveConfig();	
 			    	  		plugin.reloadConfig();
-			    	  		plugin.setColors();
+			    	  		colorManager.setColors();
 			    	  		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&aThe speedrunner is now &6" + player.getName()));
 			        	 return true;
 			         } else {
@@ -219,7 +220,7 @@ public class CommandHandler implements CommandExecutor {
 				        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&cUsage: /manhunt addteammember <player name> <team>"));
 				        	 return true;		        	 
 				         }
-		    	  			if(Main.isTeam(player.getName()) == true) {
+		    	  			if(teamManager.isTeam(player.getName()) == true) {
 					        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&cPlayer is already in a team!"));
 					        	 return true;			    	  				
 		    	  			}
@@ -230,7 +231,7 @@ public class CommandHandler implements CommandExecutor {
 			    	  			plugin.getConfig().set("team1", list);
 			    	  			plugin.saveConfig();
 			    	  			plugin.reloadConfig();
-			    	  			plugin.setColors();
+			    	  			colorManager.setColors();
 			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been added to the team " + plugin.getConfig().getString("team1Color") + plugin.getConfig().getString("team1name")));
 			    	  			break;
 			    	  		case "team2":
@@ -239,7 +240,7 @@ public class CommandHandler implements CommandExecutor {
 			    	  			plugin.getConfig().set("team2", list2);
 			    	  			plugin.saveConfig();
 			    	  			plugin.reloadConfig();
-			    	  			plugin.setColors();
+			    	  			colorManager.setColors();
 			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been added to the team " + plugin.getConfig().getString("team2Color") + plugin.getConfig().getString("team2name")));
 			    	  			break;
 			    	  		case "guards":
@@ -248,7 +249,7 @@ public class CommandHandler implements CommandExecutor {
 			    	  			plugin.getConfig().set("guards", list3);
 			    	  			plugin.saveConfig();
 			    	  			plugin.reloadConfig();
-			    	  			plugin.setColors();
+			    	  			colorManager.setColors();
 			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been added to the team " + plugin.getConfig().getString("guardColor") + plugin.getConfig().getString("guardTeamName")));
 			    	  			break;
 			    	  		case "spectators":
@@ -257,7 +258,7 @@ public class CommandHandler implements CommandExecutor {
 			    	  			plugin.getConfig().set("spectators", list4);
 			    	  			plugin.saveConfig();
 			    	  			plugin.reloadConfig();
-			    	  			plugin.setColors();
+			    	  			colorManager.setColors();
 			    	  			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&e" + player.getName() + " &ahas been added to the team " + plugin.getConfig().getString("spectatorColor") + plugin.getConfig().getString("spectatorName")));
 			    	  			break;
 			    	  		default:
@@ -287,7 +288,7 @@ public class CommandHandler implements CommandExecutor {
 				        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&cUsage: /manhunt removeteammember <player name> <team>"));
 				        	 return true;		        	 
 				         }
-		    	  			if(Main.isTeam(player.getName()) == false) {
+		    	  			if(teamManager.isTeam(player.getName()) == false) {
 					        	 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&cPlayer is not in a team!"));
 					        	 return true;			    	  				
 		    	  			}
@@ -390,32 +391,34 @@ public class CommandHandler implements CommandExecutor {
 			            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix")  + plugin.getConfig().getString("messages_gameAlreadyStarted")));
 			            return true;		    		  
 		    	  }
-		    	  Main.GameState = true;
+		    	  if(plugin.counting == true) {
+			            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix")  + plugin.getConfig().getString("messages_gameAlreadyStarted")));
+			            return true;		    		  
+		    	  }		    	  
 		    	  Bukkit.getWorld("world").setTime(0);
-		    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_gameIsStarting")));  
-		    	  	try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b5"));
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b4")); 
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b3"));
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b2")); 
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}
-		    		  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b1"));  
-		    		  try {Thread.sleep(1000L);} catch (InterruptedException e) {e.printStackTrace();}  
-		    	  ArrayList<?> list = new ArrayList<>(Bukkit.getOnlinePlayers());
-		    	  list.forEach((p) -> {
-		    		  
-		    		  Player player = ((Player) p);
-		    		  player.getActivePotionEffects().clear();
-		    		  Main.giveItems(player);
-		    		  	
-		              player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 100, 0);
-		    	  });
-		    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_gameStarted")));
-		    	  
-		    	  Main.compassCalibrate(plugin.getConfig().getString("hunted"), plugin.getConfig());
+		    	  plugin.counting = true;
+		    	  plugin.counted = false;
+		    	  CountdownTimer timer = new CountdownTimer(plugin,
+		    		        plugin.getConfig().getInt("counterToStart"),
+		    		        () ->  {
+		    		        	Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_gameIsStarting")));
+		    		        },
+		    		        () -> {    
+		    		              plugin.counted = true;
+		    		              plugin.counting = false;
+		    		    		  new gameManager().start();
+		    			    	  Main.GameState = true;
+		    			    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_gameStarted")));
+		    			    	  
+		    			    	  compassManager.calibrate(plugin.getConfig().getString("hunted"), plugin.getConfig());	
+		    		        },
+		    		        (t) -> Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages_gameStartingCount").replaceAll("%seconds%", String.valueOf(t.getSecondsLeft()))))
+
+		    		);
+		    	  timer.scheduleTimer();
+
+
+
 
 		      }
 		      if (args.length > 0 && args[0].equalsIgnoreCase("stop")) {
@@ -427,23 +430,7 @@ public class CommandHandler implements CommandExecutor {
 			            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_gameNotStarted")));
 			            return true;		    		  
 		    	  }
-		    	  Main.GameState = false;
-		    	  ArrayList<?> list = new ArrayList<>(Bukkit.getOnlinePlayers());
-		    	  list.forEach((p) -> {  
-		    		  Player player = ((Player) p);
-					   player.getActivePotionEffects().clear();
-					   player.setGameMode(GameMode.ADVENTURE);
-					   player.teleport(new Location(Bukkit.getWorld("world"), Double.parseDouble(plugin.getConfig().getString("spawnCoords").split(", ")[0]), Double.parseDouble(plugin.getConfig().getString("spawnCoords").split(", ")[1]), Double.parseDouble(plugin.getConfig().getString("spawnCoords").split(", ")[2])));	
-					   player.setHealth(20.0);
-					   player.setFoodLevel(20);
-					   player.setSaturation(20);
-					   player.setLevel(0);
-					   player.setExp(0);
-					   player.getInventory().clear();
-		    	  });
-
-		    	  
-		            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_gameStopped")));
+		    	  	gameManager.stop();
 		            return true;
 		      }		      
 		      return false;
