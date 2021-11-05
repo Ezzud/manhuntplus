@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import fr.ezzud.hunting.commands.CommandHandler;
 import fr.ezzud.hunting.listeners.onBreak;
 import fr.ezzud.hunting.listeners.onChat;
@@ -32,7 +33,7 @@ public class Main extends JavaPlugin implements Listener {
 		   
 		   
 		   public void onEnable() {
-			   plugin = this;
+			   	plugin = this;
 			   	  this.saveDefaultConfig();
 			      PluginManager pm = Bukkit.getPluginManager(); 
 			      pm.registerEvents(this, this);
@@ -55,7 +56,6 @@ public class Main extends JavaPlugin implements Listener {
 			   whitelistManager.resetWhitelist();
 		   }	
 	
-
-		  
+		
 		   
 }
