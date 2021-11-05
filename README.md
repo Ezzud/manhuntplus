@@ -51,7 +51,8 @@ Default config: <a href="https://github.com/Ezzud/manhuntplus/blob/main/config.y
 Support: <a href="https://ezzud.fr/discord">Click here!</a><br />
 Spigot link: <a href="https://www.spigotmc.org/resources/%E2%AD%90-manhunt-plus-%E2%AD%90-teams-guards-effects-%E2%AD%90-1-16-5-%E2%AD%90.97396">Click here!</a><br />
 API Usage example:<br />
-```YAML
+
+```Java
 
 public class Main extends JavaPlugin implements Listener {
 	@Override
