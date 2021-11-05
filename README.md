@@ -27,10 +27,19 @@ Plugin is fully configurable</h3><br />
 ![Img](https://cdn.discordapp.com/attachments/886217701930987623/905948718489030716/band3.png)<br />
 <p>
 
-- /manhunt - *Main command* 
-- /manhunt start - *Start the game*  `Permission: manhunt.admin`
-- /manhunt stop - *Stop the game* `Permission: manhunt.admin`
-- /manhunt reload - *Reload the config* `Permission: manhunt.admin`
+- /manhunt - *Main command*​
+- /manhunt help - *Display the help message* `Permission: manhunt.default`​
+- /manhunt list - *List all team members* `Permission: manhunt.default`​
+- /manhunt setspawn - *Change lobby spawnpoint* `Permission: manhunt.admin` ​
+- /manhunt setlocation <Team> - *Change team's spawnpoint* `Permission: manhunt.admin`
+  <br>**Teams: team1, team2, guards, speedrunner** ​
+- /manhunt addteammember <Player Name> <Team> - *Add a member in a team* `Permission: manhunt.admin`
+<br>**Teams: team1, team2, guards, spectators**​
+- /manhunt removeteammember <Player Name> <Team> - *Remove a member from a team* `Permission: manhunt.admin`
+  <br>**Teams: team1, team2, guards, spectators**​
+- /manhunt start - *Start the game* `Permission: manhunt.admin` ​
+- /manhunt stop - *Stop the game* `Permission: manhunt.admin`​
+- /manhunt reload - *Reload the config* `Permission: manhunt.admin`​
 - /manhunt tp - *Allow guards to teleport to speedrunner*
   
 </p>
