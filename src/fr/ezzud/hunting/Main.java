@@ -639,6 +639,7 @@ public class Main extends JavaPlugin implements Listener {
 	           while(team1Var.hasNext()) {
 	              String member = (String)team1Var.next();
 	              if(member.toString().equals(player.getName())) {
+	            	 player.getActivePotionEffects().clear();
 	             	 player.getInventory().clear();
 	             	 player.setGameMode(GameMode.SURVIVAL);
 	             	 player.setHealth(20.0);
@@ -664,9 +665,7 @@ public class Main extends JavaPlugin implements Listener {
 			               	    player.addPotionEffect(effect);
 		               	    }
 
-		                }
-	             	 player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 16));
-	             	 player.getInventory().addItem(new ItemStack(Material.COOKIE, 1));        	 
+		                }       	 
 	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +   this.getConfig().getString("messages_teamReveal").replaceAll("%team%", this.getConfig().getString("team1name")).replaceAll("%teamColor%", this.getConfig().getString("team1Color"))));
 	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +   this.getConfig().getString("messages_objectives_team").replaceAll("%player%", this.getConfig().getString("hunted"))));
 	             	 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") +  this.getConfig().getString("messages_feature_team").replaceAll("%delay%", this.getConfig().getString("coordinatesRefreshDelay"))));
@@ -679,7 +678,7 @@ public class Main extends JavaPlugin implements Listener {
 	           while(team2Var.hasNext()) {
 	              String member = (String)team2Var.next();
 	              if(member.toString().equals(player.getName())) {
-	             	 
+	            	 player.getActivePotionEffects().clear();
 	             	 player.getInventory().clear();
 	             	 player.setGameMode(GameMode.SURVIVAL);
 	             	 player.setDisplayName(this.getConfig().getString("team2Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
@@ -722,7 +721,7 @@ public class Main extends JavaPlugin implements Listener {
 	           while(guardVar.hasNext()) {
 	              String member = (String)guardVar.next();
 	              if(member.toString().equals(player.getName())) {
-	             	 
+	            	 player.getActivePotionEffects().clear(); 
 	             	 player.getInventory().clear();
 	             	 player.setGameMode(GameMode.SURVIVAL);
 	             	 player.setDisplayName(ChatColor.GOLD + player.getName() + ChatColor.RESET);
@@ -764,6 +763,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	              if(huntedVar.toString().equals(player.getName())) {
 	             	 Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix") + this.getConfig().getString("messages_teleporting").replaceAll("%player%", player.getDisplayName()))); 
+	             	player.getActivePotionEffects().clear();
 	             	 player.getInventory().clear();
 	             	 player.setGameMode(GameMode.SURVIVAL);
 	             	 player.setHealth(20.0);
@@ -799,6 +799,7 @@ public class Main extends JavaPlugin implements Listener {
 		           while(teamSVar.hasNext()) {
 		               String member = (String)teamSVar.next();
 		               if(member.equals(player.getName())) {
+		            	   player.getActivePotionEffects().clear();
 			             	 player.getInventory().clear();
 			             	 player.setGameMode(GameMode.SPECTATOR);
 			             	 player.setHealth(20.0);
