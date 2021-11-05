@@ -1,48 +1,49 @@
 package fr.ezzud.hunting.api.events;
 
 import java.util.Date;
-import java.util.List;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import fr.ezzud.hunting.api.methods.manhuntSpeedrunner;
 import fr.ezzud.hunting.api.methods.manhuntTeam;
+import fr.ezzud.hunting.api.methods.manhuntTeamManager;
 
 public class manhuntSpeedrunnerWinEvent extends Event {
 
 	private Date endDate;
-	private String speedrunner;
-	private List<String> spectators;
-	private List<String> guards;
-	private List<String> team1;
-	private List<String> team2; 
+	private manhuntSpeedrunner speedrunner;
+	private manhuntTeam team1;
+	private manhuntTeam team2;
+	private manhuntTeam guards;
+	private manhuntTeam spectators;
 	
 	public manhuntSpeedrunnerWinEvent() {
-		this.speedrunner = new manhuntTeam().getSpeedrunner();
+		this.speedrunner = new manhuntTeamManager().getSpeedrunner();
 		this.endDate = new Date();
-		this.team1 =  new manhuntTeam().getTeam1();
-		this.team2 =  new manhuntTeam().getTeam2();
-		this.guards =  new manhuntTeam().getTeamGuard();
-		this.spectators =  new manhuntTeam().getTeamSpectator();
+		this.team1 =  new manhuntTeamManager().getTeam1();
+		this.team2 =  new manhuntTeamManager().getTeam2();
+		this.guards =  new manhuntTeamManager().getTeamGuard();
+		this.spectators =  new manhuntTeamManager().getTeamSpectator();
 	}
 	
-	public String getSpeedrunner() {
+	public manhuntSpeedrunner getSpeedrunner() {
 		return this.speedrunner;
 	}
 	
-	public List<String> getTeam1() {
+	public manhuntTeam getTeam1() {
 		return this.team1;
 	}
 	
-	public List<String> getTeam2() {
+	public manhuntTeam getTeam2() {
 		return this.team2;
 	}
 	
-	public List<String> getTeamGuard() {
+	public manhuntTeam getTeamGuard() {
 		return this.guards;
 	}
 	
-	public List<String> getTeamSpectator() {
+	public manhuntTeam getTeamSpectator() {
 		return this.spectators;
 	}
 	

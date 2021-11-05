@@ -58,8 +58,9 @@ spectators:
      
 team1name: "Blue"
 team2name: "Red"
-guardTeamName: "Guards"
-spectatorName: "Spectators"
+guardname: "Guards"
+spectatorname: "Spectators"
+speedrunnername: "Speedrunner"
 team1Color: "&9"
 team2Color: "&c"
 huntedColor: "&e"

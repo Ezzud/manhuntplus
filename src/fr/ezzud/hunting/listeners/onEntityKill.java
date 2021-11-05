@@ -16,7 +16,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import fr.ezzud.hunting.Main;
 import fr.ezzud.hunting.api.events.manhuntGameStopEvent;
 import fr.ezzud.hunting.api.events.manhuntSpeedrunnerWinEvent;
-import fr.ezzud.hunting.api.methods.manhuntTeam;
+import fr.ezzud.hunting.api.methods.manhuntTeamManager;
 
 public class onEntityKill implements Listener {
     Main plugin;
@@ -61,7 +61,7 @@ public class onEntityKill implements Listener {
 			                  Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consolecommand.replace("%player%", member));
 			               }
 			           }
-			           manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeam());
+			           manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeamManager());
 					   Bukkit.getPluginManager().callEvent(stopEvent);	
 	            }
 	   }

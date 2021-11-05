@@ -3,6 +3,7 @@ package fr.ezzud.hunting.commands;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,10 +13,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+
 import fr.ezzud.hunting.Main;
 import fr.ezzud.hunting.api.events.manhuntGameStartEvent;
 import fr.ezzud.hunting.api.events.manhuntGameStopEvent;
-import fr.ezzud.hunting.api.methods.manhuntTeam;
+import fr.ezzud.hunting.api.methods.manhuntTeamManager;
 import fr.ezzud.hunting.management.CountdownTimer;
 import fr.ezzud.hunting.management.colorManager;
 import fr.ezzud.hunting.management.compassManager;
@@ -367,18 +369,18 @@ public class CommandHandler implements CommandExecutor {
 
 			       while(teamGVar.hasNext()) {
 			           String member = (String)teamGVar.next();
-			           sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("guardColor") + plugin.getConfig().getString("guardTeamName") + " "+ member));
+			           sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("guardColor") + plugin.getConfig().getString("guardname") + " "+ member));
 
 			       }
 				   Iterator<?> teamSVar = plugin.getConfig().getStringList("spectators").iterator();
 
 			       while(teamSVar.hasNext()) {
 			           String member = (String)teamSVar.next();
-			           sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("spectatorColor") + plugin.getConfig().getString("spectatorName") + " "+ member));
+			           sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("spectatorColor") + plugin.getConfig().getString("spectatorname") + " "+ member));
 
 			       }	
 				   String teamHVar = plugin.getConfig().getString("hunted");
-				   sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("huntedColor") +"Speedrunner " +  teamHVar));
+				   sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("huntedColor") + plugin.getConfig().getString("speedrunnername") + " "+  teamHVar));
 				   
 				   return true;
 		      }
@@ -410,7 +412,7 @@ public class CommandHandler implements CommandExecutor {
 		    		              plugin.counted = true;
 		    		              plugin.counting = false;
 		    		    		  new gameManager().start();
-		    		    		  manhuntGameStartEvent startEvent = new manhuntGameStartEvent(new manhuntTeam());
+		    		    		  manhuntGameStartEvent startEvent = new manhuntGameStartEvent(new manhuntTeamManager());
 		    					  Bukkit.getPluginManager().callEvent(startEvent);	
 		    			    	  Main.GameState = true;
 		    			    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_gameStarted")));
@@ -436,7 +438,7 @@ public class CommandHandler implements CommandExecutor {
 			            return true;		    		  
 		    	  }
 		    	  	gameManager.stop();
-		    	  	manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeam());
+		    	  	manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeamManager());
 					Bukkit.getPluginManager().callEvent(stopEvent);	
 		            return true;
 		      }		      

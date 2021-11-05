@@ -16,7 +16,7 @@ import fr.ezzud.hunting.Main;
 import fr.ezzud.hunting.api.events.manhuntGameStopEvent;
 import fr.ezzud.hunting.api.events.manhuntSpeedrunnerDiedEvent;
 import fr.ezzud.hunting.api.events.manhuntSpeedrunnerKilledEvent;
-import fr.ezzud.hunting.api.methods.manhuntTeam;
+import fr.ezzud.hunting.api.methods.manhuntTeamManager;
 
 public class onKill implements Listener {
     Main plugin;
@@ -51,7 +51,7 @@ public class onKill implements Listener {
 				    	   String member = (String)team1Var.next();
 				    	   if(member.equals(killer.getName())) {
 				    		   Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_victory").replaceAll("%teamColor%", plugin.getConfig().getString("team1Color")).replaceAll("%team%", plugin.getConfig().getString("team1name")))); 
-							   manhuntSpeedrunnerKilledEvent diedEvent = new manhuntSpeedrunnerKilledEvent(new manhuntTeam().getTeam1(), new manhuntTeam().getTeam2());
+							   manhuntSpeedrunnerKilledEvent diedEvent = new manhuntSpeedrunnerKilledEvent(new manhuntTeamManager().getTeam1(), new manhuntTeamManager().getTeam2());
 							   Bukkit.getPluginManager().callEvent(diedEvent);	
 				    		   Iterator<?> team1Var2 = plugin.getConfig().getStringList("team1").iterator();
 				    		   while(team1Var2.hasNext()) {
@@ -62,7 +62,7 @@ public class onKill implements Listener {
 					                  Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consolecommand.replace("%player%", pl));
 					               }
 				    		   }
-				    		   manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeam());
+				    		   manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeamManager());
 							   Bukkit.getPluginManager().callEvent(stopEvent);
 				    	   }
 				       }					   
@@ -73,7 +73,7 @@ public class onKill implements Listener {
 			               String member = (String)team2Var.next();
 			               if(member.equals(killer.getName())) {
 			            	   Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_victory").replaceAll("%teamColor%", plugin.getConfig().getString("team2Color")).replaceAll("%team%", plugin.getConfig().getString("team2name")))); 
-							   manhuntSpeedrunnerKilledEvent diedEvent = new manhuntSpeedrunnerKilledEvent(new manhuntTeam().getTeam2(), new manhuntTeam().getTeam1());
+							   manhuntSpeedrunnerKilledEvent diedEvent = new manhuntSpeedrunnerKilledEvent(new manhuntTeamManager().getTeam2(), new manhuntTeamManager().getTeam1());
 							   Bukkit.getPluginManager().callEvent(diedEvent);
 							   
 			            	   Iterator<?> team2Var2 = plugin.getConfig().getStringList("team2").iterator();
@@ -85,15 +85,15 @@ public class onKill implements Listener {
 					                  Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consolecommand.replace("%player%", pl));
 					               }
 				    		   }
-				    		   manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeam());
+				    		   manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeamManager());
 							   Bukkit.getPluginManager().callEvent(stopEvent);
 			            	   
 			               }
 			           }	
 			    } else {
-					   manhuntSpeedrunnerDiedEvent diedEvent = new manhuntSpeedrunnerDiedEvent();
+					   manhuntSpeedrunnerDiedEvent diedEvent = new manhuntSpeedrunnerDiedEvent(new manhuntTeamManager());
 					   Bukkit.getPluginManager().callEvent(diedEvent);
-					   manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeam());
+					   manhuntGameStopEvent stopEvent = new manhuntGameStopEvent(new manhuntTeamManager());
 					   Bukkit.getPluginManager().callEvent(stopEvent);			    	
 			    }
 	    		   Iterator<?> var7 = plugin.getConfig().getStringList("defeatCommands").iterator();

@@ -6,38 +6,27 @@ import fr.ezzud.hunting.Main;
 
 public class manhuntTeam {
 	static Main plugin = Main.getInstance();
-	private List<String> team1;
-	private List<String> team2;
-	private List<String> guards;
-	private List<String> spectators;
-	private String speedrunner; 
+	private String color;
+	private List<String> members;
+	private String name; 
 	
-	public manhuntTeam() {
-		this.team1 = plugin.getConfig().getStringList("team1");
-		this.team2 = plugin.getConfig().getStringList("team2");
-		this.guards = plugin.getConfig().getStringList("guards");
-		this.spectators = plugin.getConfig().getStringList("spectators");
-		this.speedrunner = plugin.getConfig().getString("hunted");
+	public manhuntTeam(String team) {
+		this.members = plugin.getConfig().getStringList(team);
+		this.name = plugin.getConfig().getString(team + "name");
+		this.color = plugin.getConfig().getString(team + "Color");
 	}
 	
 	
-	public List<String> getTeam1() {
-		return this.team1;
+	public String getName() {
+		return this.name;
 	}
 	
-	public List<String> getTeam2() {
-		return this.team2;
+	public String getColor() {
+		return this.color;
 	}
 	
-	public List<String> getTeamGuard() {
-		return this.guards;
+	public List<String> getMembers() {
+		return this.members;
 	}
 	
-	public List<String> getTeamSpectator() {
-		return this.spectators;
-	}
-	
-	public String getSpeedrunner() {
-		return this.speedrunner;
-	}
 }
