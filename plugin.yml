@@ -1,6 +1,6 @@
 name: Manhunt
 main: fr.ezzud.hunting.Main
-version: 1.4.0
+version: 1.4.2
 author: Ezzud
 commands:
   manhunt:

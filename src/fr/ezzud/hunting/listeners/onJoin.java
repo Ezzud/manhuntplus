@@ -1,6 +1,7 @@
 package fr.ezzud.hunting.listeners;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,28 +29,20 @@ public class onJoin implements Listener {
 		   if(Main.GameState == true) {
 			   Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("joinMessage").replaceAll("%player%", p)));
 			   Player player = event.getPlayer();
-			   Iterator<?> team2Var = plugin.getConfig().getStringList("team2").iterator();
-
-	           while(team2Var.hasNext()) {
-	               String member = (String)team2Var.next();
-	               if(member.equals(player.getName())) {
+			   List<String> team2Var = plugin.getConfig().getStringList("team2");
+			   if(team2Var.contains(player.getName())) {
 	            	   player.setDisplayName(plugin.getConfig().getString("team2Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	            	   player.setPlayerListName(plugin.getConfig().getString("team2Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	            	   player.setGameMode(GameMode.SURVIVAL);
-	                }
 	           }
 
 
-			   Iterator<?> team1Var = plugin.getConfig().getStringList("team1").iterator();
-
-	           while(team1Var.hasNext()) {
-	               String member = (String)team1Var.next();
-	               if(member.equals(player.getName())) {
+			   List<String> team1Var = plugin.getConfig().getStringList("team1");
+			   if(team1Var.contains(player.getName())) {
 	            	   player.setDisplayName(plugin.getConfig().getString("team1Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	            	   player.setPlayerListName(plugin.getConfig().getString("team1Color").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	            	   player.setGameMode(GameMode.SURVIVAL);
 	                }
-	           }
 	           
 			   String teamHVar = plugin.getConfig().getString("hunted");
                if(teamHVar.equals(player.getName())) {
@@ -58,27 +51,19 @@ public class onJoin implements Listener {
             	   player.setGameMode(GameMode.SURVIVAL);
                 }			
 	           
-			   Iterator<?> teamGVar = plugin.getConfig().getStringList("guards").iterator();
-
-	           while(teamGVar.hasNext()) {
-	               String member = (String)teamGVar.next();
-	               if(member.equals(player.getName())) {
-	            	   player.setDisplayName(plugin.getConfig().getString("guardColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
-	            	   player.setPlayerListName(plugin.getConfig().getString("guardColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
-	            	   player.setGameMode(GameMode.SURVIVAL);
-	                }
-	           }
+			   List<String> teamGVar = plugin.getConfig().getStringList("guards");
+			   if(teamGVar.contains(player.getName())) {
+            	   player.setDisplayName(plugin.getConfig().getString("guardColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+            	   player.setPlayerListName(plugin.getConfig().getString("guardColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
+            	   player.setGameMode(GameMode.SURVIVAL);
+			   }
 	           
 	           
-			   Iterator<?> teamSVar = plugin.getConfig().getStringList("spectators").iterator();
-
-	           while(teamSVar.hasNext()) {
-	               String member = (String)teamSVar.next();
-	               if(member.equals(player.getName())) {
+			   List<String> teamSVar = plugin.getConfig().getStringList("spectators");
+			   if(teamSVar.contains(player.getName())) {
 	            	   player.setDisplayName(plugin.getConfig().getString("spectatorColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	            	   player.setPlayerListName(plugin.getConfig().getString("spectatorColor").replaceAll("&",  "§") + player.getName() + ChatColor.RESET);
 	            	   player.setGameMode(GameMode.SPECTATOR);
-	                }
 	           }
 		   } else {
 			   Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawnpoint " + p + " " + plugin.getConfig().getString("spawnCoords").split(", ")[0]  + " " + plugin.getConfig().getString("spawnCoords").split(", ")[1]   + " " + plugin.getConfig().getString("spawnCoords").split(", ")[2] );

@@ -28,6 +28,7 @@ public class onEntityKill implements Listener {
 	   public void EntityKill(EntityDeathEvent event) {
 	        Entity entity = event.getEntity();
 	            if (entity.getType().equals(EntityType.ENDER_DRAGON)) {
+	            	Main.GameState = false;
 			    	  Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + plugin.getConfig().getString("messages_enderdragon_win").replaceAll("%player%", plugin.getConfig().getString("hunted"))));
 					   manhuntSpeedrunnerWinEvent winEvent = new manhuntSpeedrunnerWinEvent();
 					   Bukkit.getPluginManager().callEvent(winEvent);
